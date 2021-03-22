@@ -1,0 +1,51 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: auto;
+  max-width: 38rem;
+  padding: 2rem;
+}
+
+.sidebar{
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  width: 200px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;/* Black */
+  background-color: #f1f1f1;
+
+  padding-top: 20px;
+}
+
+.sidebar-main{
+  padding-right: 10px;
+  padding-left:10px;
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+}
+
+#container{
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.bottomButtons{
+  background-color: #cecece;
+  position: fixed;
+  bottom: 0;
+  width: inherit;
+}
+
+.bottomButtons button{
+  height: 30px;
+  width: 30px;
+  border: 0;
+  border-radius: 3px;
+  margin: 5px 5px;
+}
+
+.main {
+  margin-left: 160px; /* Same as the width of the sidebar */
+  padding: 0px 10px;
+}
