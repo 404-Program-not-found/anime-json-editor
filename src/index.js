@@ -19,7 +19,7 @@ const createWindow = () => {
       nodeIntegration: true,
       contextIsolation: false,
     },
-    width: 800,
+    width: 1200,
     height: 600,
   });
 
@@ -54,7 +54,7 @@ app.on('ready', function(){
                 if (result.canceled === false) {
                   fs.readFile(result.filePaths[0], (err, data) => {
                   if (!err) {
-                    win.webContents.send('print-file', [data.toString(), basename(result.filePaths[0])])
+                    win.webContents.send('print-file', [JSON.parse(data.toString()), basename(result.filePaths[0]), result.filePaths[0]])
                     }
                   })
                 } 

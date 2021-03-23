@@ -3,41 +3,54 @@
   <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
-    <link rel="stylesheet" type="text/css" href="tree/jsonview.bundle.scss">
     <link rel="stylesheet" href="index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/b537c1e27a.js" crossorigin="anonymous"></script>
+    <link href="StyleSheet.css" rel="stylesheet">
+    <meta charset="utf-8">
     </head>
   <body>
-    <div class="main">
-      <h1>💖 Hello World!</h1>
-      <p>Welcome to your Electron application.</p>
-    </div>
-    <div class="sidebar">
-      <div class="sidebar-main">
-        <h3 id="current-file">FileName</h3>
+    <div class="content">
+      <div class="preview">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+          <div class="container-fluid">
+            <a class="navbar-brand">The ultimate anime <br> recommendation flowchart</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="d-flex">
+                <button class="btn btn-light btn-small navbar-btn" id="backBtn">Back</button>
+            </div>
+            </div>
+          </div>
+        </nav>
+      <div class="main container-fluid text-center">
+        <h1 id="mainTitle"></h1>
+        <div id="recommends" class="d-flex justify-content-center"></div>
+        <div id="choices" class="d-flex justify-content-center"></div>
       </div>
-      <div class="tree"></div>
-      <div class="bottomButtons">
-        <button id="add-list-item" type="button">
-          <i class="fas fa-plus"></i>
-        </button>
-        <button id="rename-list-item" type="button">
-          <i class="fas fa-pencil-alt"></i>
-        </button>
-        <button id="remove-list-item" type="button">
-          <i class="fas fa-trash-alt"></i>
-        </button>
+      </div>
+      <div class="sidebar">
+        <div class="sidebar-main">
+          <h3 id="current-file">FileName</h3>
+        </div>
+        <div id="tree"></div>
+        <div class="bottomButtons">
+          <button id="add-list-item" type="button">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button id="rename-list-item" type="button">
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+          <button id="remove-list-item" type="button">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
       </div>
     </div>
-  <script src="tree/jsonview.bundle.js">
-    const { ipcRenderer } = require('electron')
-    ipcRenderer.on('print-file', (event, datastr) => {
-      document.getElementById("current-file").textContent = datastr[1]
-      console.log(datastr)
-      let data = datastr[0];
-      const tree = jsonview.createTree(data);
-      jsonview.render(tree, document.querySelector('.tree'));
-    })
-  </script>
+    <script type="text/javascript" src="renderjson.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
   </body>
 </html>
