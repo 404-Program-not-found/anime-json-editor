@@ -1,7 +1,11 @@
 const {app, BrowserWindow} = require('electron');
 const {dialog} = require('electron');
+const {ipcMain} = require('electron');
 const {Menu} = require('electron');
+const {basename} = require('path')
 const path = require('path');
+const fs = require('fs');
+let win = null
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -11,6 +15,10 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
     width: 800,
     height: 600,
   });
@@ -20,13 +28,14 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+  return mainWindow
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function(){
-  createWindow()
+  win = createWindow()
 
   const template = [
     {
@@ -35,12 +44,23 @@ app.on('ready', function(){
         {
           label: 'Open File',
           click: function(){
-            dialog.showOpenDialog({
+            dialog.showOpenDialog(
+              {
               properties: ['openFile'],
               filters:[
                 {name:"JSON files", extensions:["json"]}
-              ]
-            });
+              ] 
+              }).then(result => {
+                if (result.canceled === false) {
+                  fs.readFile(result.filePaths[0], (err, data) => {
+                  if (!err) {
+                    win.webContents.send('print-file', [data.toString(), basename(result.filePaths[0])])
+                    }
+                  })
+                } 
+              }).catch(err => {
+                console.log(err)
+              });
           }
         },
         {
@@ -78,7 +98,7 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    win = createWindow();
   }
 });
 

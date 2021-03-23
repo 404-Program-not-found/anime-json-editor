@@ -3,11 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
-    <link rel="stylesheet" href="tree/treejs.css">
+    <link rel="stylesheet" type="text/css" href="tree/jsonview.bundle.scss">
     <link rel="stylesheet" href="index.css">
     <script src="https://kit.fontawesome.com/b537c1e27a.js" crossorigin="anonymous"></script>
-    <script src="tree/tree.js"></script>
-  </head>
+    </head>
   <body>
     <div class="main">
       <h1>💖 Hello World!</h1>
@@ -15,9 +14,9 @@
     </div>
     <div class="sidebar">
       <div class="sidebar-main">
-        <h3>FileName</h3>
+        <h3 id="current-file">FileName</h3>
       </div>
-      <div id="container"></div>
+      <div class="tree"></div>
       <div class="bottomButtons">
         <button id="add-list-item" type="button">
           <i class="fas fa-plus"></i>
@@ -30,32 +29,15 @@
         </button>
       </div>
     </div>
-    <script>
-		var count = 1;
-
-		var root = new TreeNode("root");
-			var n1 = new TreeNode("1");
-				var n11 = new TreeNode("1.1");
-			var n2 = new TreeNode("2");
-			var n3 = new TreeNode("3");
-				var n31 = new TreeNode("3.1");
-				var n32 = new TreeNode("3.2");
-					var n321 = new TreeNode("3.2.1");
-				var n33 = new TreeNode("3.3");
-
-		root.addChild(n1);
-		root.addChild(n2);
-		root.addChild(n3);
-
-		n1.addChild(n11);
-
-		n3.addChild(n31);
-		n3.addChild(n32);
-		n3.addChild(n33);
-
-		n32.addChild(n321);
-
-		var view = new TreeView(root, "#container");
-	</script>
+  <script src="tree/jsonview.bundle.js">
+    const { ipcRenderer } = require('electron')
+    ipcRenderer.on('print-file', (event, datastr) => {
+      document.getElementById("current-file").textContent = datastr[1]
+      console.log(datastr)
+      let data = datastr[0];
+      const tree = jsonview.createTree(data);
+      jsonview.render(tree, document.querySelector('.tree'));
+    })
+  </script>
   </body>
 </html>
