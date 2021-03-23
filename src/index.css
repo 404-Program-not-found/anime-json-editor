@@ -13,20 +13,26 @@ body {
 .sidebar{
   display: flex;
   flex-flow: column;
-  flex: 0 0 200px;
+  position: sticky;
+  flex: 0 0 25rem;
   height: 100%; /* Full-height: remove this if you want "auto" height */
-  width: 20rem; /* Set the width of the sidebar */
+  width: 25rem; /* Set the width of the sidebar */
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   left: 0;/* Black */
   background-color: #f1f1f1;
 }
 
+.node-tree{
+  background-color: #f1f1f1;
+  border: 0px !important; 
+
+}
+
 .sidebar-main{
   padding-right: 10px;
   padding-left:10px;
   word-wrap: break-word;
-  position: sticky;
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   left: 0;
@@ -58,22 +64,6 @@ body {
 }
 
 .preview {
-  flex: 1 0 auto;
+  flex: 1;
+  overflow-y: auto;
 }
-
-.renderjson                {overflow: hidden; flex: 0 0 auto; margin: 0 0; min-height: 100%;}
-.renderjson a              { text-decoration: none; }
-.renderjson .disclosure    { color: grey;}
-.renderjson .syntax        { color: grey; }
-.renderjson .string        { color: red; }
-.renderjson .string:hover  {background-color: grey;}
-.renderjson .number        { color: cyan; }
-.renderjson .boolean       { color: plum; }
-.renderjson .key           { color: lightblue; }
-.renderjson .keyword       { color: lightgoldenrodyellow; }
-.renderjson .object.syntax { color: lightseagreen; }
-.renderjson .array.syntax  { color: lightsalmon; }
-
-.highlight .nc { color: plum;
-                 font-weight: normal; }
-.highlight .nt { color: lightblue; }

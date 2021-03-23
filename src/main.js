@@ -5,19 +5,68 @@ var element = document.querySelector('meta[name~="jsonDoc"]');
 var content = element && element.getAttribute("content");
 var json_file
 var step_count
+var history = []
 var datastr_main
 const { ipcRenderer } = require('electron')
+
+function reqListener () {
+    json_file = JSON.parse(this.responseText);
+    step_count = json_file.Root
+    generatePage(json_file)
+}
+
+window.onpopstate = function(event) {
+    if (event.state == null){
+        step_count = json_file.Root;
+        generatePage(json_file)}
+    else if(event.state.step_destination){
+            step_count = event.state.step_destination;
+            generatePage(json_file)
+    }
+  };
 
 ipcRenderer.on('print-file', (event, datastr) => {
   document.getElementById("current-file").textContent = datastr[1]
   console.log(datastr)
   step_count = datastr[0].Root
   document.getElementById("tree").textContent = "";
-  document.getElementById("tree").appendChild(renderjson(datastr[0]));
   json_file = datastr[0]
   datastr_main = datastr
+  parseJSONTree(datastr[0], "#tree")
   generatePage(datastr[0])
 })
+
+function parseJSONTree(file, element_id){
+    function format_for_treeview(data, arr) {
+        for (var key in data) {
+        if (Array.isArray(data[key]) || data[key].toString() === "[object Object]") {
+            // when data[key] is an array or object
+            var nodes = [];
+            var completedNodes = format_for_treeview(data[key], nodes);
+            arr.push({
+            text: key,
+            nodes: completedNodes
+            });
+        } else {
+            // when data[key] is just strings or integer values
+            arr.push({
+            text: key + " : " + data[key]
+            });
+        }
+        }
+        return arr;
+    }
+    
+    
+    $(element_id).treeview({
+        color: "#428bca",
+        expandIcon: 'fas fa-caret-right',
+		collapseIcon: 'fas fa-caret-down',
+        showTags: true,
+        data: format_for_treeview(file, [])
+    });
+
+}
 
 function createCard(parsed_value) {
     
