@@ -36,6 +36,23 @@ ipcRenderer.on('print-file', (event, datastr) => {
   generatePage(datastr[0])
 })
 
+function renameJSON(){
+    var edited = document.getElementsByClassName("node-selected")
+    if (edited){
+        var content = $(".node-selected .text-node").text()
+        const inputform = document.createElement("div")
+        inputform.className = "form-group"
+        const inputbox = document.createElement("input")
+        inputbox.className = "form-control"
+        inputbox.id = "changeJsonBox"
+        inputbox.value = content
+        inputform.appendChild(inputbox)
+        edited[0].appendChild(inputform)
+        $('.node-selected .node-text').remove()
+        document.getElementById("changeJsonBox").focus()
+    }
+}
+
 function parseJSONTree(file, element_id){
     function format_for_treeview(data, arr) {
         for (var key in data) {
