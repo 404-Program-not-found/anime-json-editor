@@ -5,7 +5,6 @@ var element = document.querySelector('meta[name~="jsonDoc"]');
 var content = element && element.getAttribute("content");
 var json_file
 var step_count
-var history = []
 var datastr_main
 const { ipcRenderer } = require('electron')
 
@@ -32,7 +31,15 @@ ipcRenderer.on('print-file', (event, datastr) => {
   document.getElementById("tree").textContent = "";
   json_file = datastr[0]
   datastr_main = datastr
-  parseJSONTree(datastr[0], "#tree")
+  createTreeData(datastr[0]);
+  if ($('.jstree-1').length !== 0){
+    $("#tree").jstree(true).destroy()
+    $('#tree').jstree({ core: { data: buildObject(datastr[0]) } })
+  } else{
+      $('#tree').jstree({ core: { data: buildObject(datastr[0]) } })
+    }
+  
+  
   generatePage(datastr[0])
 })
 
@@ -48,41 +55,51 @@ function renameJSON(){
         inputbox.value = content
         inputform.appendChild(inputbox)
         edited[0].appendChild(inputform)
-        $('.node-selected .node-text').remove()
-        document.getElementById("changeJsonBox").focus()
+        $('.node-selected .text-node').remove()
+        const node = document.getElementById("changeJsonBox")
+        node.focus()
+        node.addEventListener("keyup", ({key}) => {
+            if (key === "Enter") {
+                console.log(`The submitted value is ${node.value}`)
+                node.remove()
+
+                node.text = '<new value>';
+                $('#tree').treeview(true).removeNode([]);
+            }
+        })
     }
 }
 
-function parseJSONTree(file, element_id){
-    function format_for_treeview(data, arr) {
-        for (var key in data) {
-        if (Array.isArray(data[key]) || data[key].toString() === "[object Object]") {
-            // when data[key] is an array or object
-            var nodes = [];
-            var completedNodes = format_for_treeview(data[key], nodes);
-            arr.push({
-            text: key,
-            nodes: completedNodes
-            });
-        } else {
-            // when data[key] is just strings or integer values
-            arr.push({
-            text: key + " : " + data[key]
-            });
-        }
-        }
-        return arr;
+function buildObject(source) {
+    if (Array.isArray(source)) {
+        return source.reduce(function (r, a) {
+            if (a !== null && typeof a === 'object') {
+                return r.concat(buildObject(a));
+            }
+            r.push({ text: a });
+            return r;
+        }, []);
     }
-    
-    
-    $(element_id).treeview({
-        color: "#428bca",
-        expandIcon: 'fas fa-caret-right',
-		collapseIcon: 'fas fa-caret-down',
-        showTags: true,
-        data: format_for_treeview(file, [])
-    });
+    if (source !== null && typeof source === 'object') {
+        return Object.keys(source).map(function (k) {
+            return {
+                text: k,
+                children: buildObject(source[k])
+            };
+        });
+    }
+    return [{ text: source }];
+}
 
+
+function createTreeData(object){
+   if (Array.isArray(object)) {
+        return object.map(text => ({ text }));
+    }
+    if (object !== null && typeof object === 'object') {
+        return Object.keys(object).map(text => ({ text, children: buildObject(object[text])}));
+    }
+    return [{ text: object }];
 }
 
 function createCard(parsed_value) {
