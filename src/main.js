@@ -7,6 +7,7 @@ var json_file
 var step_count
 var history = []
 var datastr_main
+const fs = require('fs')
 const { ipcRenderer } = require('electron')
 
 function reqListener () {
@@ -27,28 +28,28 @@ window.onpopstate = function(event) {
 
 ipcRenderer.on('print-file', (event, datastr) => {
   if(datastr[0].hasOwnProperty("Root")){
-    console.log(datastr)
-    step_count = datastr[0].Root
-    json_file = datastr[0]
-    datastr_main = datastr
-    generatePage(datastr[0])
+      try{
+        console.log(datastr)
+        step_count = datastr[0].Root
+        json_file = datastr[0]
+        datastr_main = datastr
+        generatePage(datastr[0])
+      } catch{
+        snackBarShow()
+      }
   } else{
-    while (table.hasChildNodes()) {
-        table.removeChild(table.lastChild);
-    }
-    while (button_table.hasChildNodes()) {
-        button_table.removeChild(button_table.lastChild);
-    }
-    document.getElementById("mainTitle").textContent = "File > Open File to start!"
     snackBarShow()
   }
 })
 
 function snackBarShow() {
-    var x = document.getElementById("snackbar");
-    x.className = "show";
-    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-  }
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function(toastEl) {
+    // Creates an array of toasts (it only initializes them)
+      return new bootstrap.Toast(toastEl) // No need for options; use the default options
+    });
+   toastList.forEach(toast => toast.show()); 
+};
   
 
 function createCard(parsed_value) {
@@ -87,11 +88,16 @@ function createCard(parsed_value) {
     card.classList.add(...outline.split(" "));
     if(parsed_value[2]){
     const bottomImage = document.createElement("img");
-    if(!parsed_value[2].includes("img/")){
-        parsed_value[2] = "img/"+ parsed_value[2]
-    }
-    parsed_value[2] = datastr_main[2].split(datastr_main[1])[0] + parsed_value[2]
-    bottomImage.src = parsed_value[2];
+    fs.access(parsed_value[2], fs.F_OK, (err) => {
+        if (err) {
+            if(!parsed_value[2].includes("img/")){
+                parsed_value[2] = "img/"+ parsed_value[2]
+            }
+            parsed_value[2] = datastr_main[2].split(datastr_main[1])[0] + parsed_value[2]
+            bottomImage.src = parsed_value[2];
+        }else{
+            bottomImage.src = parsed_value[2];
+        }})
     bottomImage.className = "card-img-top"
     bottomImage.id = "bottomImage";
     card.append(bottomImage);
