@@ -110,19 +110,3 @@ body {
   height: 225px !important;
   object-fit: cover;
 }
-
-@media screen and (max-width: 986px) {
-  #recommends {
-    flex-direction: column !important; 
-    align-items: center !important;
-  }
-  .card {
-    width: 100%;
-  }
-  .navbar-brand{
-    font-size: 0.75rem;
-  }
-  #mainTitle{
-    font-size: 6.5vmax;
-  }
-}

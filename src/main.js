@@ -26,64 +26,30 @@ window.onpopstate = function(event) {
   };
 
 ipcRenderer.on('print-file', (event, datastr) => {
-  document.getElementById("current-file").textContent = datastr[1]
-  console.log(datastr)
-  step_count = datastr[0].Root
-  document.getElementById("tree").textContent = "";
-  json_file = datastr[0]
-  datastr_main = datastr
-  parseJSONTree(datastr[0], "#tree")
-  generatePage(datastr[0])
+  if(datastr[0].hasOwnProperty("Root")){
+    console.log(datastr)
+    step_count = datastr[0].Root
+    json_file = datastr[0]
+    datastr_main = datastr
+    generatePage(datastr[0])
+  } else{
+    while (table.hasChildNodes()) {
+        table.removeChild(table.lastChild);
+    }
+    while (button_table.hasChildNodes()) {
+        button_table.removeChild(button_table.lastChild);
+    }
+    document.getElementById("mainTitle").textContent = "File > Open File to start!"
+    snackBarShow()
+  }
 })
 
-function renameJSON(){
-    var edited = document.getElementsByClassName("node-selected")
-    if (edited){
-        var content = $(".node-selected .text-node").text()
-        const inputform = document.createElement("div")
-        inputform.className = "form-group"
-        const inputbox = document.createElement("input")
-        inputbox.className = "form-control"
-        inputbox.id = "changeJsonBox"
-        inputbox.value = content
-        inputform.appendChild(inputbox)
-        edited[0].appendChild(inputform)
-        $('.node-selected .node-text').remove()
-        document.getElementById("changeJsonBox").focus()
-    }
-}
-
-function parseJSONTree(file, element_id){
-    function format_for_treeview(data, arr) {
-        for (var key in data) {
-        if (Array.isArray(data[key]) || data[key].toString() === "[object Object]") {
-            // when data[key] is an array or object
-            var nodes = [];
-            var completedNodes = format_for_treeview(data[key], nodes);
-            arr.push({
-            text: key,
-            nodes: completedNodes
-            });
-        } else {
-            // when data[key] is just strings or integer values
-            arr.push({
-            text: key + " : " + data[key]
-            });
-        }
-        }
-        return arr;
-    }
-    
-    
-    $(element_id).treeview({
-        color: "#428bca",
-        expandIcon: 'fas fa-caret-right',
-		collapseIcon: 'fas fa-caret-down',
-        showTags: true,
-        data: format_for_treeview(file, [])
-    });
-
-}
+function snackBarShow() {
+    var x = document.getElementById("snackbar");
+    x.className = "show";
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+  }
+  
 
 function createCard(parsed_value) {
     

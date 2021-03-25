@@ -10,60 +10,58 @@ body {
   flex-flow: row-reverse;
 }
 
-.sidebar{
-  display: flex;
-  flex-flow: column;
-  position: sticky;
-  flex: 0 0 25rem;
-  height: 100%; /* Full-height: remove this if you want "auto" height */
-  width: 25rem; /* Set the width of the sidebar */
-  z-index: 1; /* Stay on top */
-  top: 0; /* Stay at the top */
-  left: 0;/* Black */
-  background-color: #f1f1f1;
-}
-
 .node-tree{
   background-color: #f1f1f1;
   border: 0px !important; 
 
 }
 
-.sidebar-main{
-  padding-right: 10px;
-  padding-left:10px;
-  word-wrap: break-word;
-  z-index: 1; /* Stay on top */
-  top: 0; /* Stay at the top */
-  left: 0;
-}
-
-#current-file{
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-#tree{
-  overflow:auto;
-  display: flex;
-  flex-grow: 1;
-  margin-left: 5px;
-}
-
-.bottomButtons{
-  background-color: #cecece;
-  width: inherit;
-}
-
-.bottomButtons button{
-  height: 30px;
-  width: 30px;
-  border: 0;
-  border-radius: 3px;
-  margin: 5px 5px;
-}
-
 .preview {
   flex: 1;
   overflow-y: auto;
+}
+
+#snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #333; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
 }
