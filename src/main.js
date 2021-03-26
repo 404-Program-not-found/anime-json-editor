@@ -16,6 +16,27 @@ function reqListener () {
     generatePage(json_file)
 }
 
+$(".card-img-top").on("click", function(event){
+    var img_target = $(event.target)
+    dialog.showOpenDialog(
+        {
+        properties: ['openFile'],
+        filters:[
+          {name:"Images", extensions:["png", "jpg", "jpeg"]}
+        ] 
+        }).then(result => {
+          if (result.canceled === false) {
+            fs.readFile(result.filePaths[0], (err, data) => {
+            if (!err) {
+              img_target.src = result.file
+              }
+            })
+          } 
+        }).catch(err => {
+          console.log(err)
+        });
+})
+
 window.onpopstate = function(event) {
     if (event.state == null){
         step_count = json_file.Root;
@@ -66,11 +87,10 @@ function createCard(parsed_value) {
     const textTitle = document.createElement("h5");
     textTitle.textContent = parsed_value[0];
     textTitle.id = "textTitle"
-    textTitle.className = "card-title"
+    textTitle.className = "card-title editable"
     const topName = document.createElement("span");
     topName.textContent = parsed_value[1];
-    topName.id = "topName";
-    topName.id = "card-text";
+    topName.class="card-text editable"
     var backgroundColor = data_tags.normal
     var outline = change_tags.false
     var hint_string = []
@@ -138,7 +158,7 @@ function createButton(text, destination, json_obj){
     const button = document.createElement('button');
     button.textContent = text
     button.onclick = function() {update_page(destination, json_obj)};
-    button.className = "col-md mx-2 mb-5 px-3"
+    button.className = "col-md mx-2 mb-5 px-3 editable"
     button.id = "buttonChoices" 
     return button
 
