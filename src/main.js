@@ -1,8 +1,6 @@
 console.log("Cards is being generated...");
 const table = document.getElementById('recommends');
 const button_table = document.getElementById('choices')
-var element = document.querySelector('meta[name~="jsonDoc"]');
-var content = element && element.getAttribute("content");
 var json_file
 var step_count
 var history = []
@@ -16,25 +14,20 @@ function reqListener () {
     generatePage(json_file)
 }
 
-$(".card-img-top").on("click", function(event){
+function editImage(target){
+    var image_new = ipcRenderer.sendSync('change-img')
+    if (image_new){
+        target.src = image_new
+    }
+};
+
+function editText(target){
+
+}
+
+$(".editable").on("click", function(event){
     var img_target = $(event.target)
-    dialog.showOpenDialog(
-        {
-        properties: ['openFile'],
-        filters:[
-          {name:"Images", extensions:["png", "jpg", "jpeg"]}
-        ] 
-        }).then(result => {
-          if (result.canceled === false) {
-            fs.readFile(result.filePaths[0], (err, data) => {
-            if (!err) {
-              img_target.src = result.file
-              }
-            })
-          } 
-        }).catch(err => {
-          console.log(err)
-        });
+    console.log("clicked")
 })
 
 window.onpopstate = function(event) {
@@ -119,6 +112,7 @@ function createCard(parsed_value) {
             bottomImage.src = parsed_value[2];
         }})
     bottomImage.className = "card-img-top"
+    bottomImage.setAttribute("ondblclick", "editImage(this)")
     bottomImage.id = "bottomImage";
     card.append(bottomImage);
 }

@@ -31,20 +31,34 @@ const createWindow = () => {
   return mainWindow
 };
 
+ipcMain.on('change-img', (event, arg) => {
+  dialog.showOpenDialog(win,
+    {
+    properties: ['openFile'],
+    filters:[
+      {name:"Images", extensions:["png", "jpg", "jpeg"]}
+    ] 
+    }).then(result => {
+        event.returnValue = result.filePaths[0]
+    }).catch(err => {
+      console.log(err)
+    });
+})
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function(){
   win = createWindow()
-
   const template = [
     {
       label: 'File',
       submenu: [
         {
           label: 'Open File',
+          accelerator: 'CmdOrCtrl+O',
           click: function(){
-            dialog.showOpenDialog(
+            dialog.showOpenDialog(win,
               {
               properties: ['openFile'],
               filters:[
@@ -64,7 +78,8 @@ app.on('ready', function(){
           }
         },
         {
-          label: 'Save'
+          label: 'Save',
+          accelerator: 'CmdOrCtrl+S'
         }
       ]
     },
@@ -72,10 +87,12 @@ app.on('ready', function(){
       label: 'Edit',
       submenu: [
         {
-          label: 'Undo'
+          label: 'Undo',
+          accelerator: 'CmdOrCtrl+Z'
         },
         {
-          label: 'Redo'
+          label: 'Redo',
+          accelerator: 'CmdOrCtrl+Shift+Z'
         }
       ]
     }
