@@ -45,18 +45,6 @@ ipcMain.on('change-img', (event, arg) => {
     });
 })
 
-ipcMain.on("save-reponse", (event, arg) => {
-  if (arg){
-    var filepath = arg[1]
-    var dirpath = filepath.substring(0, filepath.lastIndexOf("\\"));
-    if (!dirpath){
-      dirpath= filepath.substring(0, filepath.lastIndexOf("/"));
-    }
-    var filename = basename(filepath)
-    app.setPath(filename, dirpath)
-  }
-})
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

@@ -18,9 +18,20 @@ function editImage(target){
     }
 };
 
-function editText(target){
-
-}
+$('body').on("input", ".editable", function(event) {
+    const child_dom = event.target
+    if (json_file){
+        if(child_dom.parentElement.className == "card-body"){
+            parent_id = child_dom.parentElement.parentElement.id
+            const convert = {"textTitle":0, "textDesc":1}
+            json_file.Nodes[step_count][parent_id][convert[child_dom.id]] = child_dom.textContent
+        } else if (child_dom.id == "mainTitle"){
+            json_file.Title[step_count] = child_dom.textContent
+        }
+        
+    }
+    
+});
 
 
 window.onpopstate = function(event) {
@@ -35,7 +46,9 @@ window.onpopstate = function(event) {
 
 ipcRenderer.on('save-file', (event) => {
     if (json_file && datastr_main){
-        ipcRenderer.send("save-reponse", [json_file, datastr_main[2]])
+        fs.writeFile(datastr_main[2], JSON.stringify(json_file, null, 1), function (err) {
+            if (err) throw err;               console.log('Results Received');
+          }); 
     }
 })
 
@@ -80,9 +93,14 @@ function createCard(parsed_value, key) {
     textTitle.textContent = parsed_value[0];
     textTitle.id = "textTitle"
     textTitle.className = "card-title editable"
+    textTitle.contentEditable = "true"
+    textTitle.spellcheck = "true"
     const topName = document.createElement("span");
     topName.textContent = parsed_value[1];
-    topName.class="card-text editable"
+    topName.className="card-text editable"
+    topName.id = "textDesc"
+    topName.contentEditable = "true"
+    topName.spellcheck = "true"
     var backgroundColor = data_tags.normal
     var outline = change_tags.false
     var hint_string = []
@@ -99,14 +117,16 @@ function createCard(parsed_value, key) {
     card.classList.add(...backgroundColor.split(" "));
     card.classList.add(...outline.split(" "));
     if(parsed_value[2]){
+    
     const bottomImage = document.createElement("img");
     fs.access(parsed_value[2], fs.F_OK, (err) => {
         if (err) {
-            if(!parsed_value[2].includes("img/")){
-                parsed_value[2] = "img/"+ parsed_value[2]
+            var img_src
+            if(!datastr_main[2].includes("img/")){
+                img_src = "img/"+ parsed_value[2]
             }
-            parsed_value[2] = datastr_main[2].split(datastr_main[1])[0] + parsed_value[2]
-            bottomImage.src = parsed_value[2];
+            img_src = datastr_main[2].split(datastr_main[1])[0] + img_src
+            bottomImage.src = img_src
         }else{
             bottomImage.src = parsed_value[2];
         }})
@@ -152,7 +172,9 @@ function createButton(text, destination, json_obj){
     const button = document.createElement('button');
     button.textContent = text
     button.onclick = function() {update_page(destination, json_obj)};
-    button.className = "col-md mx-2 mb-5 px-3 editable"
+    button.className = `col-md mx-2 mb-5 px-3 editable ${destination}`
+    button.contentEditable = "true"
+    button.spellcheck = "true"
     button.id = "buttonChoices" 
     return button
 
