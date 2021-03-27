@@ -27,7 +27,7 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools(); 
   return mainWindow
 };
 
@@ -43,6 +43,18 @@ ipcMain.on('change-img', (event, arg) => {
     }).catch(err => {
       console.log(err)
     });
+})
+
+ipcMain.on("save-reponse", (event, arg) => {
+  if (arg){
+    var filepath = arg[1]
+    var dirpath = filepath.substring(0, filepath.lastIndexOf("\\"));
+    if (!dirpath){
+      dirpath= filepath.substring(0, filepath.lastIndexOf("/"));
+    }
+    var filename = basename(filepath)
+    app.setPath(filename, dirpath)
+  }
 })
 
 // This method will be called when Electron has finished
@@ -79,7 +91,10 @@ app.on('ready', function(){
         },
         {
           label: 'Save',
-          accelerator: 'CmdOrCtrl+S'
+          accelerator: 'CmdOrCtrl+S',
+          click: function(){
+            win.webContents.send('save-file')
+          }
         }
       ]
     },

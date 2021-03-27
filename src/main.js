@@ -3,21 +3,18 @@ const table = document.getElementById('recommends');
 const button_table = document.getElementById('choices')
 var json_file
 var step_count
-var history = []
 var datastr_main
+const {basename} = require('path')
 const fs = require('fs')
 const { ipcRenderer } = require('electron')
-
-function reqListener () {
-    json_file = JSON.parse(this.responseText);
-    step_count = json_file.Root
-    generatePage(json_file)
-}
 
 function editImage(target){
     var image_new = ipcRenderer.sendSync('change-img')
     if (image_new){
         target.src = image_new
+        var parent_id = target.parentElement.id
+        json_file.Nodes[step_count][parent_id][2] = basename(image_new)
+        console.log(json_file)
     }
 };
 
@@ -25,10 +22,6 @@ function editText(target){
 
 }
 
-$(".editable").on("click", function(event){
-    var img_target = $(event.target)
-    console.log("clicked")
-})
 
 window.onpopstate = function(event) {
     if (event.state == null){
@@ -39,6 +32,12 @@ window.onpopstate = function(event) {
             generatePage(json_file)
     }
   };
+
+ipcRenderer.on('save-file', (event) => {
+    if (json_file && datastr_main){
+        ipcRenderer.send("save-reponse", [json_file, datastr_main[2]])
+    }
+})
 
 ipcRenderer.on('print-file', (event, datastr) => {
   if(datastr[0].hasOwnProperty("Root")){
@@ -66,7 +65,7 @@ function snackBarShow() {
 };
   
 
-function createCard(parsed_value) {
+function createCard(parsed_value, key) {
     
     var data_tags = {"normal":"normal", "shoujo":"border-info border-3 colored-border", "shounen":"border-success border-3 colored-border", "ecchi":"border-danger border-3 colored-border"}
     var change_tags = {"true":"changes border-3", "false":"not-change"}
@@ -128,6 +127,7 @@ function createCard(parsed_value) {
         cardBody.append(inline_hint);
     }
     card.append(cardBody)
+    card.id = key
     align.appendChild(card) 
     return align
 }
@@ -171,7 +171,7 @@ function generatePage(json_obj){
         const rowDiv = document.createElement('div')
         rowDiv.className = "row"
         for (var i in step_dict){
-        rowDiv.appendChild(createCard(step_dict[i]))
+        rowDiv.appendChild(createCard(step_dict[i], i))
     }
     table.appendChild(rowDiv)
 }   
