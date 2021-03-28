@@ -21,7 +21,14 @@ body {
 
   .navbar a {
     word-wrap: break-word;
-    padding: 0 16px;
+  }
+
+  .settings-btn{
+    width: 40px !important;
+  }
+
+  .navbar-btn{
+    margin: 0 5px;
   }
 
   .navbar :not(.active).nav-link:hover {
@@ -45,6 +52,10 @@ body {
   align-items: center;
 }
 
+.navbar-btn{
+  height: 40px;
+}
+
 #backBtn{
   border:none;
 }
@@ -55,8 +66,21 @@ body {
   background-color: rgb(201, 201, 201);
 }
 
-#buttonChoices{
-  background-color: #8CD867; /* green */
+.buttonChoices{
+  background-color: #8CD867;   /* green */
+  color: white;
+  padding: 5px 5px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  outline:none;
+  font-size: 1.5rem;
+
+}
+
+.buttonChoices-disabled{
+  background-color: gray; /* gray */
   color: white;
   padding: 5px 5px;
   border: none;
@@ -67,7 +91,11 @@ body {
   font-size: 1.5rem;
 }
 
-#buttonChoices:hover{
+.form-control{
+  text-transform: lowercase;
+}
+
+.buttonChoices:hover{
   background-color: #7bbb5b; /* green */
 }
 
