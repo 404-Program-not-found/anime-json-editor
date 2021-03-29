@@ -6,7 +6,7 @@ function animeSeperator(json_file, anime = {}){
                     if (Array.isArray(json_file.Nodes[key][x])){
                     curr_array = json_file.Nodes[key][x]
                     var id = curr_array[1].replace(/[^a-zA-Z ]/g, "").replace(/\s+/g, '-').toLowerCase();
-                    if (!anime[id]){
+                    if (!anime[id] ){
                         var title = curr_array[1]
                         var desc = curr_array[0]
                         var img = null
@@ -37,6 +37,8 @@ function animeSeperator(json_file, anime = {}){
                         }
                         }
                     json_file.Nodes[key][x] = id
+                } else if (!anime[json_file.Nodes[key][x]]){
+                    throw 'Anime file may be corrupted. ID not found'
                 }
             } 
         }
@@ -49,8 +51,28 @@ function animeSeperator(json_file, anime = {}){
                 json_file.Edges[key] = edgelist
             } 
         }
+        json_file = getPages(json_file)
         return [json_file, anime]
     } else{
         return
     }
+}
+
+function getPages(json_file){
+    var pagelist = []
+    if (json_file["pages"]){
+        pagelist = json_file.pages
+    }
+    if(!pagelist.includes(json_file.Root)){
+        pagelist.push(json_file.Root)
+    }
+    for (var key in json_file.Edges){
+        for (var title in json_file.Edges[key]){
+            if (!pagelist.includes(title)){
+                pagelist.push(title)
+            }
+        }
+    }
+    json_file["pages"] = pagelist
+    return json_file
 }

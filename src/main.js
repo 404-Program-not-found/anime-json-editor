@@ -1,11 +1,9 @@
-console.log("Cards is being generated...");
 const table = document.getElementById('recommends');
 const button_table = document.getElementById('choices')
 var json_file
 var step_count
 var datastr_main
-var anime_file = {}
-var modalWrap = null;
+var anime_file
 const {basename, sep} = require('path')
 const fs = require('fs')
 const { ipcRenderer } = require('electron')
@@ -19,6 +17,26 @@ function editImage(target){
         console.log(json_file)
     }
 };
+
+function pageAdd(){
+    if(!json_file.pages.includes($("#IDInput").val()) && $("#IDInput").val()){
+        json_file.Title[$("#IDInput").val()] = "Insert a title here"
+        json_file.pages.push($("#IDInput").val())
+        update_page($("#IDInput").val(), json_file)
+    }
+}
+
+function buttonSave(target_dom){
+    const old_id = target_dom.id
+    const new_id = $('#link-select').find(":selected").text();
+    $(`button#${old_id}`).text($('#BtnNameInput').val()) 
+    $(`button#${old_id}`).attr('id', new_id);
+    json_file.Edges[step_count][old_id].Destination = new_id
+    json_file.Edges[step_count][old_id].Text = $('#BtnNameInput').val()
+    json_file.Edges[step_count][new_id] = json_file.Edges[step_count][old_id]
+    delete json_file.Edges[step_count][old_id]
+
+}
 
 $(document).on("click", ".buttonChoices", function(){
     update_page(this.id, json_file)
@@ -35,7 +53,9 @@ $(window).on("keydown", function(event){
   });
 
 $("#addBtn").on("click", function(){
-    createModalAdd()
+    if(json_file){
+        createModalAdd()
+    }
 })
 
 $("#deleteBtn").on("click",function(){
@@ -68,16 +88,16 @@ $("#editBtn").on("click",function(){
     delbtn.css("border-color", "#FFF");
     delbtn.css("color", "#000")
     if($(this).css("backgroundColor") === 'rgb(255, 255, 255)' && json_file){
-        $(".buttonChoices #buttonText").attr('contenteditable','true');
+        $(".buttonChoices").addClass('btn-editing')
         $(".buttonChoices").addClass('buttonChoices-disabled').removeClass('buttonChoices');
         $(".card").addClass('card-editing')
         $(this).css("background-color", "#03a5fc");
         $(this).css("border-color", "#03a5fc");
         $(this).css("color", "#FFF")
     }else{
-        $(".buttonChoices-disabled #buttonText").attr('contenteditable','false');
         $(".buttonChoices-disabled").addClass('buttonChoices').removeClass('buttonChoices-disabled');
         $(".card-editing").removeClass('card-editing');
+        $(".btn-editing").removeClass('btn-editing');
         $(this).css("background-color", "#FFF");
         $(this).css("border-color", "#FFF");
         $(this).css("color", "#000")
@@ -92,7 +112,7 @@ function editSave(target_dom){
     var data_tags = {"normal":"normal", "shoujo":"shoujo border-info border-3 colored-border", "shounen":"shounen border-success border-3 colored-border", "ecchi":" ecchi border-danger border-3 colored-border"}
     var change_tags = {"true":"changes border-3", "false":"not-change"}
     var tooltip_tags = {"normal":"", "shoujo":"targets female audiences (usually include themes of romance and friendship)", "shounen":"targets male audiences (usually aims to be adventurous and energetic)", "ecchi":"contains mild NSFW content", "true":"contains a plot twist or a slow start", "false":""}
-    var new_id = $('#IDInput').val()
+    var new_id = $('#IDInput').val().replace(/\s/g,'').toLowerCase();
     backgroundColor = data_tags[new_tag]
     hint_string.push(tooltip_tags[new_tag])
     hint_string.push(tooltip_tags[change])
@@ -124,107 +144,6 @@ function editSave(target_dom){
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)})
-}
-
-function createModalEdit (target_dom){
-    if(modalWrap !== null){
-        modalWrap.remove()
-    }
-    modalWrap = document.createElement('div')
-    modalWrap.innerHTML = `
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">${target_dom.querySelector("#textTitle").textContent}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="row g-3 align-items-center">
-                        <div class="col-auto">
-                            <label for="IDInput" class="col-form-label">ID</label>
-                        </div>
-                        <div class="col-auto">
-                            <input id="IDInput" class="form-control" value=${target_dom.id}>
-                        </div>
-                    </div>
-                    <div class="row g-3 align-items-center">
-                        <div class="col-auto">
-                            <label for="IDInput" class="col-form-label">Content Tag</label>
-                        </div>
-                        <div class="col-auto">
-                            <select class="form-select" id="tag-select"></select>
-                        </div>
-                    </div>
-                    <div class="row g-3 align-items-center">
-                        <div class="col-auto">
-                            <label for="IDInput" class="col-form-label">Show Changes/Slow burner?</label>
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="slowbuner">
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveBtn">Save changes</button>
-            </div>
-            </div>
-        </div>
-    </div>
-    `;
-    var index = 1;
-    for(element in ["normal", "shounen", "shoujo", "ecchi"]){
-        var opt = document.createElement("option");
-        opt.value= index;
-        opt.innerHTML = ["normal", "shounen", "shoujo", "ecchi"][element]; // whatever property it hastar
-        if (target_dom.classList.contains(opt.innerHTML)){
-            var selectedIndex = index
-        }
-        // then append it to the select element
-        if (target_dom.classList.contains("changes")){modalWrap.querySelector("#slowbuner").checked = true}
-        modalWrap.querySelector("#tag-select").appendChild(opt);
-        index++;
-        }
-    modalWrap.querySelector('#saveBtn').onclick = function() {editSave(target_dom);}
-    document.getElementsByClassName('content')[0].append(modalWrap)
-    modalWrap.querySelector("#tag-select").value = selectedIndex
-    var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
-    modal.show();
-}
-
-function createModalAdd (){
-    if(modalWrap !== null){
-        modalWrap.remove()
-    }
-    modalWrap = document.createElement('div')
-    modalWrap.innerHTML = `
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Element...</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <button type="button" class="btn btn-dark btn-small settings-btn"><i class="fas fa-id-badge"></i></button>
-                <button type="button" class="btn btn-dark btn-small settings-btn"><i class="fas fa-link"></i></button>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveBtn">Save changes</button>
-            </div>
-            </div>
-        </div>
-    </div>
-    `;
-    document.getElementsByClassName('content')[0].append(modalWrap)
-    var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
-    modal.show();
 }
 
 $(document).on("input", ".editable", function(event) {
@@ -268,6 +187,14 @@ $(document).on("click", ".card-editing", function(event) {
     
 });
 
+$(document).on("click", ".btn-editing", function(event) {
+    if (json_file){
+        console.log("clicked")
+        createModalBtnEdit(this, json_file, step_count)
+    }
+    
+});
+
 
 $(document).on("click", ".header *",function(e) {
     e.stopPropagation();
@@ -297,20 +224,18 @@ ipcRenderer.on('save-file', (event) => {
 ipcRenderer.on('print-file', (event, datastr) => {
   if(datastr[0].hasOwnProperty("Root")){
       try{
-        fs.readFile(datastr[2].split(datastr[1])[0]+"anime.json", (err, data) => {
-            if (!err) {
-              anime_file = JSON.parse(data)
-              } else {
-                  anime_file = {}
-              } 
-        })
-        var seperated = animeSeperator(datastr[0], anime_file)
-        anime_file = seperated[1]
-        console.log(datastr)
+        var local_anime_file = {}
+        try {
+            local_anime_file = JSON.parse(fs.readFileSync(datastr[2].split(datastr[1])[0]+"anime.json", {encoding:'utf8', flag:'r'}))
+          } catch (err) {}
+        var seperated = animeSeperator(datastr[0], local_anime_file)
+        console.log(seperated[0])
+        console.log(seperated[1])
         step_count = datastr[0].Root
         json_file = seperated[0]
         datastr_main = datastr
         generatePage(datastr[0])
+        anime_file = seperated[1]
       } catch{
         snackBarShow()
       }
@@ -416,9 +341,9 @@ function back(){
 
 function createButton(text, destination, json_obj){
     const button = document.createElement('button');
-    button.innerHTML = `<span id="buttonText" class="editable">${text}</span>`
+    button.textContent = text
     button.className = `col-md mx-2 mb-5 px-3 deletion buttonChoices`
-    button.querySelector('#buttonText').spellcheck = "true"
+    button.textContent.spellcheck = "true"
     button.id = destination
     return button
 
