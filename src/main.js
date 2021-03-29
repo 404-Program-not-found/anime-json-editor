@@ -8,6 +8,10 @@ const {basename, sep} = require('path')
 const fs = require('fs')
 const { ipcRenderer } = require('electron')
 
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+  }
+
 function pageDel(){
     if (step_count !== json_file.Root){
         delete json_file.Nodes[step_count]
@@ -76,15 +80,17 @@ function createNewCard(){
             json_file.Nodes[step_count].push(ID)
             return
         }
-        if($("input:empty").length == 0){
-            card_json["title"] = $('cardTitleInput').val()
-            card_json["desc"] = $('cardDescInput').val()
-            card_json["img"] = $('formFile').val()
+        if($("input").filter(function () {return $.trim($(this).val()).length == 0}).length == 0){
+            card_json["title"] = $('#cardTitleInput').val()
+            card_json["desc"] = $('#cardDescInput').val()
+            card_json["img"] = basename($('#formFile').val())
+            card_json["tags"] = {}
             card_json["tags"]["changes"] = $('#slowbuner').is(':checked')
             card_json["tags"]["audience"] = $("#tag-select option:selected").text();
             if(card_json){
-                document.getElementById('recommends').firstChild.append(createCard(card_json));
                 anime_file[ID] = card_json
+                document.getElementById('recommends').firstChild.append(createCard(card_json));
+                json_file.Nodes[step_count] = json_file.Nodes[step_count] || [];
                 json_file.Nodes[step_count].push(ID)
             }
         } else{
@@ -240,6 +246,10 @@ $(document).on("click", ".active-deletion",function(event) {
             var target_dom = event.target.closest(".card")
             id = target_dom.id
             delete json_file.Nodes[step_count][id]
+            const jsObj = JSON.stringify(json_file)
+            if (jsObj.includes(id)){
+                delete anime_file[id]
+            }
         } else if(event.target.closest(".buttonChoices-disabled")){
             var target_dom = event.target.closest(".buttonChoices-disabled")
             delete json_file.Edges[step_count][target_dom.id]
@@ -379,6 +389,7 @@ function createCard(parsed_value) {
         cardBody.append(inline_hint);
     }
     card.append(cardBody)
+    card.id = getKeyByValue(anime_file, parsed_value)
     align.appendChild(card) 
     return align
 }
