@@ -379,7 +379,6 @@ function createCard(parsed_value) {
         cardBody.append(inline_hint);
     }
     card.append(cardBody)
-    card.id = parsed_value
     align.appendChild(card) 
     return align
 }
@@ -391,7 +390,6 @@ function update_page(destination, json_obj){
     history.pushState({"step":step_count, "step_destination":destination}, "", window.location);
     console.log({"step":step_count});
     step_count = destination;
-    cached_json_file = JSON.parse(JSON.stringify(json_file));
     generatePage(json_obj);
 
 
