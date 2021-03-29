@@ -1,12 +1,29 @@
 const table = document.getElementById('recommends');
 const button_table = document.getElementById('choices')
 var json_file
+var cached_json_file
 var step_count
 var datastr_main
 var anime_file
 const {basename, sep} = require('path')
 const fs = require('fs')
 const { ipcRenderer } = require('electron')
+
+function pageDel(){
+    if (step_count !== json_file.Root){
+        delete json_file.Nodes[step_count]
+        delete json_file.Title[step_count]
+        delete json_file.pages[step_count]
+        const index = json_file.pages.indexOf(step_count);
+        if (index > -1) {
+        json_file.pages.splice(index, 1);
+        }
+        for (var key in json_file.Edges){
+            delete json_file.Edges[key][step_count]
+        }
+        update_page(json_file.Root, json_file)
+    }
+};
 
 function editImage(target){
     var image_new = ipcRenderer.sendSync('change-img')
@@ -24,7 +41,11 @@ function pageAdd(){
         json_file.pages.push($("#IDInput").val())
         update_page($("#IDInput").val(), json_file)
     }
-}
+};
+
+function pageMove(){
+    update_page($('#link-select').find(":selected").text(), json_file)
+};
 
 function buttonSave(target_dom){
     const old_id = target_dom.id
@@ -36,7 +57,7 @@ function buttonSave(target_dom){
     json_file.Edges[step_count][new_id] = json_file.Edges[step_count][old_id]
     delete json_file.Edges[step_count][old_id]
 
-}
+};
 
 $(document).on("click", ".buttonChoices", function(){
     update_page(this.id, json_file)
@@ -55,6 +76,18 @@ $(window).on("keydown", function(event){
 $("#addBtn").on("click", function(){
     if(json_file){
         createModalAdd()
+    }
+})
+
+$("#delPageBtn").on("click", function(){
+    if(json_file){
+        delPageModal(step_count)
+    }
+})
+
+$("#gotoBtn").on("click", function(){
+    if(json_file){
+        movePageModal(step_count)
     }
 })
 
@@ -210,6 +243,14 @@ window.onpopstate = function(event) {
     }
   };
 
+ipcRenderer.on('undo', (event)=>{
+    if (cached_json_file){
+
+        json_file = [cached_json_file, cached_json_file = json_file][0];
+        generatePage(json_file)
+    }
+})
+
 ipcRenderer.on('save-file', (event) => {
     if (json_file && datastr_main){
         fs.writeFile(datastr_main[2], JSON.stringify(json_file, null, 1), function (err) {
@@ -329,6 +370,7 @@ function update_page(destination, json_obj){
     history.pushState({"step":step_count, "step_destination":destination}, "", window.location);
     console.log({"step":step_count});
     step_count = destination;
+    cached_json_file = JSON.parse(JSON.stringify(json_file));
     generatePage(json_obj);
 
 

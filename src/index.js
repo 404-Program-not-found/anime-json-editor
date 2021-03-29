@@ -91,11 +91,10 @@ app.on('ready', function(){
       submenu: [
         {
           label: 'Undo',
-          accelerator: 'CmdOrCtrl+Z'
-        },
-        {
-          label: 'Redo',
-          accelerator: 'CmdOrCtrl+Shift+Z'
+          accelerator: 'CmdOrCtrl+Z',
+          click: function(){
+            win.webContents.send('undo')
+          }
         }
       ]
     }
