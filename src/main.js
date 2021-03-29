@@ -180,7 +180,7 @@ function editSave(target_dom){
     const old_id = target_dom.id
     var new_tag = $('#tag-select').find(":selected").text();
     var change = $('#slowbuner').is(':checked').toString();
-    var data_tags = {"normal":"normal", "shoujo":"shoujo border-info border-3 colored-border", "shounen":"shounen border-success border-3 colored-border", "ecchi":" ecchi border-danger border-3 colored-border"}
+    var data_tags = {"normal":"normal", "shoujo":"shoujo border-info border-3 colored-border", "shounen":"shounen border-success border-3 colored-border", "ecchi":"ecchi border-danger border-3 colored-border"}
     var change_tags = {"true":"changes border-3", "false":"not-change"}
     var tooltip_tags = {"normal":"", "shoujo":"targets female audiences (usually include themes of romance and friendship)", "shounen":"targets male audiences (usually aims to be adventurous and energetic)", "ecchi":"contains mild NSFW content", "true":"contains a plot twist or a slow start", "false":""}
     var new_id = $('#IDInput').val().replace(/\s/g,'').toLowerCase();
@@ -318,7 +318,7 @@ ipcRenderer.on('print-file', (event, datastr) => {
 
 function createCard(parsed_value) {
     
-    var data_tags = {"normal":"normal", "shoujo":"shoujo border-info border-3 colored-border", "shounen":"shounen border-success border-3 colored-border", "ecchi":" ecchi border-danger border-3 colored-border"}
+    var data_tags = {"normal":"normal", "shoujo":"shoujo border-info border-3 colored-border", "shounen":"shounen border-success border-3 colored-border", "ecchi":"ecchi border-danger border-3 colored-border"}
     var change_tags = {"true":"changes border-3", "false":"not-change"}
     var tooltip_tags = {"normal":"", "shoujo":"targets female audiences (usually include themes of romance and friendship)", "shounen":"targets male audiences (usually aims to be adventurous and energetic)", "ecchi":"contains mild NSFW content", "true":"contains a plot twist or a slow start", "false":""}
     const align = document.createElement("div")

@@ -5,10 +5,10 @@ function animeSeperator(json_file, anime = {}){
             for (var x = 0; x < json_file.Nodes[key].length; x++) {
                     if (Array.isArray(json_file.Nodes[key][x])){
                     curr_array = json_file.Nodes[key][x]
-                    var id = curr_array[1].replace(/[^a-zA-Z ]/g, "").replace(/\s+/g, '-').toLowerCase();
+                    var id = curr_array[0].replace(/[^a-zA-Z ]/g, "").replace(/\s+/g, '-').toLowerCase();
                     if (!anime[id] ){
-                        var title = curr_array[1]
-                        var desc = curr_array[0]
+                        var title = curr_array[0]
+                        var desc = curr_array[1]
                         var img = null
                         var tag = "normal"
                         var changes = "false"
