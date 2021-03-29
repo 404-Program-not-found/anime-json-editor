@@ -1,4 +1,12 @@
 {
+  "build": {
+    "appId": "com.404-program-not-found.json-editor",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    }
+  },
+  
+
   "name": "anime-json-editor",
   "productName": "anime-json-editor",
   "version": "1.0.0",
@@ -9,7 +17,9 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "keywords": [],
   "author": {
@@ -51,6 +61,7 @@
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
     "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "electron-builder": "^22.10.5",
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",

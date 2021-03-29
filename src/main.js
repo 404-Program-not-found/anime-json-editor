@@ -1,7 +1,6 @@
 const table = document.getElementById('recommends');
 const button_table = document.getElementById('choices')
 var json_file
-var cached_json_file
 var step_count
 var datastr_main
 var anime_file
@@ -35,6 +34,15 @@ function editImage(target){
     }
 };
 
+function add_button(){
+    const new_id = $('#link-select').find(":selected").text();
+    const new_name = $('#BtnNameInput').val()
+    if(new_name && new_id){
+        document.getElementById('choices').firstChild.append(createButton($('#BtnNameInput').val(), $('#link-select').find(":selected").text()));
+        json_file.Edges[step_count][new_id] = {"Destination": new_id, "Text": new_name}
+    }
+}
+
 function pageAdd(){
     if(!json_file.pages.includes($("#IDInput").val()) && $("#IDInput").val()){
         json_file.Title[$("#IDInput").val()] = "Insert a title here"
@@ -58,6 +66,36 @@ function buttonSave(target_dom){
     delete json_file.Edges[step_count][old_id]
 
 };
+
+function createNewCard(){
+    
+        const card_json = {}
+        const ID = $("#ID-select").val()
+        if (anime_file[ID]){
+            document.getElementById('recommends').firstChild.append(createCard(anime_file[ID]));
+            json_file.Nodes[step_count].push(ID)
+            return
+        }
+        if($("input:empty").length == 0){
+            card_json["title"] = $('cardTitleInput').val()
+            card_json["desc"] = $('cardDescInput').val()
+            card_json["img"] = $('formFile').val()
+            card_json["tags"]["changes"] = $('#slowbuner').is(':checked')
+            card_json["tags"]["audience"] = $("#tag-select option:selected").text();
+            if(card_json){
+                document.getElementById('recommends').firstChild.append(createCard(card_json));
+                anime_file[ID] = card_json
+                json_file.Nodes[step_count].push(ID)
+            }
+        } else{
+            generateToast("Card Creation Failed", "Not all input boxes are filled, please try again")
+        }
+    
+}
+
+$(document).on("click", '#addCardBtn', function(){
+    createCardModal(anime_file)
+})
 
 $(document).on("click", ".buttonChoices", function(){
     update_page(this.id, json_file)
@@ -243,14 +281,6 @@ window.onpopstate = function(event) {
     }
   };
 
-ipcRenderer.on('undo', (event)=>{
-    if (cached_json_file){
-
-        json_file = [cached_json_file, cached_json_file = json_file][0];
-        generatePage(json_file)
-    }
-})
-
 ipcRenderer.on('save-file', (event) => {
     if (json_file && datastr_main){
         fs.writeFile(datastr_main[2], JSON.stringify(json_file, null, 1), function (err) {
@@ -259,6 +289,7 @@ ipcRenderer.on('save-file', (event) => {
         fs.writeFile(datastr_main[2].split(datastr_main[1])[0]+"anime.json", JSON.stringify(anime_file, null, 1), function (err) {
             if (err) throw err;               console.log('anime.json Saved');
           }); 
+        generateToast("Save Sucessful!", "You can now safely exit the application")
     }
 })
 
@@ -278,22 +309,12 @@ ipcRenderer.on('print-file', (event, datastr) => {
         generatePage(datastr[0])
         anime_file = seperated[1]
       } catch{
-        snackBarShow()
+        generateToast("Error", "An error occured while loading this file, please try again")
       }
   } else{
-    snackBarShow()
+    generateToast("Error", "An error occured while loading this file, please try again")
   }
 })
-
-function snackBarShow() {
-    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    var toastList = toastElList.map(function(toastEl) {
-    // Creates an array of toasts (it only initializes them)
-      return new bootstrap.Toast(toastEl) // No need for options; use the default options
-    });
-   toastList.forEach(toast => toast.show()); 
-};
-  
 
 function createCard(parsed_value) {
     
@@ -307,13 +328,13 @@ function createCard(parsed_value) {
     const cardBody = document.createElement("div");
     cardBody.className = "card-body"
     const textTitle = document.createElement("h5");
-    textTitle.textContent = anime_file[parsed_value].title;
+    textTitle.textContent = parsed_value.title;
     textTitle.id = "textTitle"
     textTitle.className = "card-title editable"
     textTitle.contentEditable = "true"
     textTitle.spellcheck = "true"
     const topName = document.createElement("span");
-    topName.textContent = anime_file[parsed_value].desc;
+    topName.textContent = parsed_value.desc;
     topName.className="card-text editable"
     topName.id = "textDesc"
     topName.contentEditable = "true"
@@ -321,25 +342,25 @@ function createCard(parsed_value) {
     var backgroundColor = data_tags.normal
     var outline = change_tags.false
     var hint_string = []
-    backgroundColor = data_tags[anime_file[parsed_value].tags.audience]
-    hint_string.push(tooltip_tags[anime_file[parsed_value].tags.audience])
-    hint_string.push(tooltip_tags[anime_file[parsed_value].tags.changes])
-    outline = (change_tags[anime_file[parsed_value].tags.changes]);
+    backgroundColor = data_tags[parsed_value.tags.audience]
+    hint_string.push(tooltip_tags[parsed_value.tags.audience])
+    hint_string.push(tooltip_tags[parsed_value.tags.changes])
+    outline = (change_tags[parsed_value.tags.changes]);
     card.classList.add(...backgroundColor.split(" "));
     card.classList.add(...outline.split(" "));
-    if(anime_file[parsed_value].img){
+    if(parsed_value.img){
     
     const bottomImage = document.createElement("img");
-    fs.access(anime_file[parsed_value].img, fs.F_OK, (err) => {
+    fs.access(parsed_value.img, fs.F_OK, (err) => {
         if (err) {
             var img_src
             if(!datastr_main[2].includes("img/")){
-                img_src = "img/"+ anime_file[parsed_value].img
+                img_src = "img/"+ parsed_value.img
             }
             img_src = datastr_main[2].split(datastr_main[1])[0] + img_src
             bottomImage.src = img_src
         }else{
-            bottomImage.src = anime_file[parsed_value].img;
+            bottomImage.src = parsed_value.img;
         }})
     bottomImage.className = "card-img-top"
     bottomImage.setAttribute("ondblclick", "editImage(this)")
@@ -381,7 +402,7 @@ function back(){
     history.back();
 }
 
-function createButton(text, destination, json_obj){
+function createButton(text, destination){
     const button = document.createElement('button');
     button.textContent = text
     button.className = `col-md mx-2 mb-5 px-3 deletion buttonChoices`
@@ -411,7 +432,7 @@ function generatePage(json_obj){
         const rowDiv = document.createElement('div')
         rowDiv.className = "row"
         for (var i in step_dict){
-        rowDiv.appendChild(createCard(step_dict[i]))
+        rowDiv.appendChild(createCard(anime_file[step_dict[i]]))
     }
     table.appendChild(rowDiv)
 }   
@@ -427,7 +448,7 @@ function generatePage(json_obj){
         const rowDiv = document.createElement('div')
         rowDiv.className = "d-grid gap-2 d-md-block"
         for (var key in step_edges){
-        rowDiv.appendChild(createButton(step_edges[key]["Text"], step_edges[key]["Destination"], json_obj));
+        rowDiv.appendChild(createButton(step_edges[key]["Text"], step_edges[key]["Destination"]));
     }
     button_table.appendChild(rowDiv)
 }

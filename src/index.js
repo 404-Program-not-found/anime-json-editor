@@ -19,15 +19,12 @@ const createWindow = () => {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    title: "Ultimate Anime JSON Editor",
     width: 1200,
     height: 600,
   });
-
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools(); 
   return mainWindow
 };
 
@@ -86,18 +83,6 @@ app.on('ready', function(){
         }
       ]
     },
-    {
-      label: 'Edit',
-      submenu: [
-        {
-          label: 'Undo',
-          accelerator: 'CmdOrCtrl+Z',
-          click: function(){
-            win.webContents.send('undo')
-          }
-        }
-      ]
-    }
   ]
 
   const menu = Menu.buildFromTemplate(template)
