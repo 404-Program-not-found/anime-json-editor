@@ -74,7 +74,7 @@ function buttonSave(target_dom){
 function createNewCard(){
     
         const card_json = {}
-        const ID = $("#ID-select").val()
+        const ID = $("#ID-select").replace(/[^a-zA-Z ]/g, "").replace(/\s+/g, '-').toLowerCase();
         if (anime_file[ID]){
             document.getElementById('recommends').firstChild.append(createCard(anime_file[ID]));
             json_file.Nodes[step_count].push(ID)
@@ -189,7 +189,7 @@ function editSave(target_dom){
     var data_tags = {"normal":"normal", "shoujo":"shoujo border-info border-3 colored-border", "shounen":"shounen border-success border-3 colored-border", "ecchi":"ecchi border-danger border-3 colored-border"}
     var change_tags = {"true":"changes border-3", "false":"not-change"}
     var tooltip_tags = {"normal":"", "shoujo":"targets female audiences (usually include themes of romance and friendship)", "shounen":"targets male audiences (usually aims to be adventurous and energetic)", "ecchi":"contains mild NSFW content", "true":"contains a plot twist or a slow start", "false":""}
-    var new_id = $('#IDInput').val().replace(/\s/g,'').toLowerCase();
+    var new_id = $('#IDInput').replace(/[^a-zA-Z ]/g, "").replace(/\s+/g, '-').toLowerCase();
     backgroundColor = data_tags[new_tag]
     hint_string.push(tooltip_tags[new_tag])
     hint_string.push(tooltip_tags[change])
