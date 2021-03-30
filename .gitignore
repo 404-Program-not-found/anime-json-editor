@@ -170,3 +170,4 @@ dist/anime-json-editor Setup 1.0.0.exe
 dist/.icon-ico/icon.ico
 dist/latest.yml
 dist/anime-json-editor Setup 1.0.1.exe
+*.blockmap
