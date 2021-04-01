@@ -6,7 +6,7 @@
     }
   },
   "name": "anime-json-editor",
-  "productName": "anime-json-editor",
+  "productName": "Anime JSON Editor",
   "version": "1.0.2",
   "description": "My Electron application description",
   "main": "src/index.js",
