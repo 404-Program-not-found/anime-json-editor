@@ -43,7 +43,7 @@ function add_button(){
     const new_name = $('#BtnNameInput').val()
     if(new_name && new_id){
         document.getElementById('choices').firstChild.append(createButton($('#BtnNameInput').val(), $('#link-select').find(":selected").text()));
-        json_file.Edges[step_count] = json_file.Edges[step_count] || [];
+        json_file.Edges[step_count] = json_file.Edges[step_count] || {};
         json_file.Edges[step_count][new_id] = {"Destination": new_id, "Text": new_name}
     }
 }
