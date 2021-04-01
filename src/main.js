@@ -33,7 +33,7 @@ function editImage(target){
     if (image_new){
         target.src = image_new
         var parent_id = target.parentElement.id
-        json_file.Nodes[step_count][parent_id][2] = basename(image_new)
+        anime_file[parent_id].img = basename(image_new)
         console.log(json_file)
     }
 };
@@ -65,11 +65,8 @@ function buttonSave(target_dom){
     const new_id = $('#link-select').find(":selected").text();
     $(`button#${old_id}`).text($('#BtnNameInput').val()) 
     $(`button#${old_id}`).attr('id', new_id);
-    json_file.Edges[step_count][old_id].Destination = new_id
-    json_file.Edges[step_count][old_id].Text = $('#BtnNameInput').val()
-    json_file.Edges[step_count][new_id] = json_file.Edges[step_count][old_id]
     delete json_file.Edges[step_count][old_id]
-
+    json_file.Edges[step_count][new_id] = {"Destination":new_id, "Text":$('#BtnNameInput').val()}
 };
 
 function createNewCard(){
