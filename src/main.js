@@ -243,9 +243,9 @@ $(document).on("click", ".active-deletion",function(event) {
         if(event.target.closest(".card")){
             var target_dom = event.target.closest(".card")
             id = target_dom.id
-            delete json_file.Nodes[step_count][id]
+            delete json_file.Nodes[step_count][json_file.Nodes[step_count].indexOf(id)]
             const jsObj = JSON.stringify(json_file)
-            if (jsObj.includes(id)){
+            if (!jsObj.includes(id)){
                 delete anime_file[id]
             }
         } else if(event.target.closest(".buttonChoices-disabled")){
@@ -316,8 +316,9 @@ ipcRenderer.on('print-file', (event, datastr) => {
         datastr_main = datastr
         generatePage(datastr[0])
         anime_file = seperated[1]
-      } catch{
+      } catch (error){
         generateToast("Error", "An error occured while loading this file, please try again")
+        console.error(error);
       }
   } else{
     generateToast("Error", "An error occured while loading this file, please try again")
