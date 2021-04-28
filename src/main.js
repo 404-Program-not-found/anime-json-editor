@@ -240,19 +240,7 @@ $(document).on("input", ".editable", function(event) {
 
 $(document).on("click", ".active-deletion",function(event) {
     if (json_file){
-        if(event.target.closest(".card")){
-            var target_dom = event.target.closest(".card")
-            id = target_dom.id
-            delete json_file.Nodes[step_count][json_file.Nodes[step_count].indexOf(id)]
-            const jsObj = JSON.stringify(json_file)
-            if (!jsObj.includes(id)){
-                delete anime_file[id]
-            }
-        } else if(event.target.closest(".buttonChoices-disabled")){
-            var target_dom = event.target.closest(".buttonChoices-disabled")
-            delete json_file.Edges[step_count][target_dom.id]
-        }
-        target_dom.remove();
+        confirmCardDel(event);
     }
     
 });
@@ -278,6 +266,22 @@ $(document).on("click", ".btn-editing", function(event) {
 $(document).on("click", ".header *",function(e) {
     e.stopPropagation();
 });
+
+function deleteCard(event){
+    if(event.target.closest(".card")){
+        var target_dom = event.target.closest(".card")
+        id = target_dom.id
+        delete json_file.Nodes[step_count][json_file.Nodes[step_count].indexOf(id)]
+        const jsObj = JSON.stringify(json_file)
+        if (!jsObj.includes(id)){
+            confirmModalDel(id)
+        }
+    } else if(event.target.closest(".buttonChoices-disabled")){
+        var target_dom = event.target.closest(".buttonChoices-disabled")
+        delete json_file.Edges[step_count][target_dom.id]
+    }
+    target_dom.remove();
+}
 
 window.onpopstate = function(event) {
     if (event.state == null){

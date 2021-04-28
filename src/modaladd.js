@@ -101,6 +101,66 @@ function createModalAdd (){
     modal.show();
 }
 
+function confirmCardDel(event){
+    if(modalWrap !== null){
+        modalWrap.remove()
+    }
+    modalWrap = document.createElement('div')
+    modalWrap.innerHTML = `
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Card?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this card?<br><b>This action cannot be undone.</b></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="saveBtn">Confirm</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    `;
+    modalWrap.querySelector('#saveBtn').onclick = function() {deleteCard(event)}
+    document.getElementsByClassName('content')[0].append(modalWrap)
+    var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+    modal.show();
+}
+
+function confirmModalDel (id){
+    if(modalWrap !== null){
+        modalWrap.remove()
+    }
+    modalWrap = document.createElement('div')
+    modalWrap.innerHTML = `
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Anime?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>We have found no additional apparences of this anime in <b>the current file</b>. Would you like to delete this anime from anime.json?<br><b>This action cannot be undone.</b></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="saveBtn">Delete Anime</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    `;
+    modalWrap.querySelector('#saveBtn').onclick = function() {delete anime_file[id]}
+    document.getElementsByClassName('content')[0].append(modalWrap)
+    var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+    modal.show();
+}
+
 function createPageAdd (){
     if(modalWrap !== null){
         modalWrap.remove()
