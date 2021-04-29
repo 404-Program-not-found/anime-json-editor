@@ -270,7 +270,7 @@ function deleteCard(event){
     if(event.target.closest(".card")){
         var target_dom = event.target.closest(".card")
         id = target_dom.id
-        const index = json_file.Nodes[step_count].indexOf(json_file.Nodes[step_count].indexOf(id));
+        const index = json_file.Nodes[step_count].indexOf(id);
         if (index > -1) {
             json_file.Nodes[step_count].splice(index, 1);
         }
