@@ -75,10 +75,8 @@ function createNewCard(){
         const ID = $("#ID-select").val().replace(/[^a-zA-Z\-]/g,'').replace(/\s+/g, '-').toLowerCase();
         if (anime_file[ID]){
             document.getElementById('recommends').firstChild.append(createCard(anime_file[ID]));
-            json_file.Nodes[step_count].push(ID)
-            return
         }
-        if($("input").filter(function () {return $.trim($(this).val()).length == 0}).length == 0){
+        else if($("input").filter(function () {return $.trim($(this).val()).length == 0}).length == 0){
             card_json["title"] = $('#cardTitleInput').val()
             card_json["desc"] = $('#cardDescInput').val()
             card_json["img"] = basename($('#formFile').val())
@@ -88,12 +86,13 @@ function createNewCard(){
             if(card_json){
                 anime_file[ID] = card_json
                 document.getElementById('recommends').firstChild.append(createCard(card_json));
-                json_file.Nodes[step_count] = json_file.Nodes[step_count] || [];
-                json_file.Nodes[step_count].push(ID)
             }
         } else{
             generateToast("Card Creation Failed", "Not all input boxes are filled, please try again")
+            return
         }
+        json_file.Nodes[step_count] = json_file.Nodes[step_count] || [];
+        json_file.Nodes[step_count].push(ID)
     
 }
 
@@ -271,7 +270,10 @@ function deleteCard(event){
     if(event.target.closest(".card")){
         var target_dom = event.target.closest(".card")
         id = target_dom.id
-        delete json_file.Nodes[step_count][json_file.Nodes[step_count].indexOf(id)]
+        const index = json_file.Nodes[step_count].indexOf(json_file.Nodes[step_count].indexOf(id));
+        if (index > -1) {
+            json_file.Nodes[step_count].splice(index, 1);
+        }
         const jsObj = JSON.stringify(json_file)
         if (!jsObj.includes(id)){
             confirmModalDel(id)
